@@ -345,7 +345,7 @@ namespace projeto_dm106.Controllers
                 }
             }
 
-                return Ok();
+            return Ok();
         }
 
         // POST api/Account/RegisterExternal

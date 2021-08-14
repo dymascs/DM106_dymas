@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -21,6 +22,15 @@ namespace projeto_dm106.Controllers
         // GET: api/Products
         public IQueryable<Product> GetProducts()
         {
+            Trace.TraceInformation("Nome do usuário: " + User.Identity.Name);
+            if (User.IsInRole("USER"))
+            {
+                Trace.TraceInformation("Usuário com papel USER");
+            }
+            else if (User.IsInRole("ADMIN"))
+            {
+                Trace.TraceInformation("Usuário com papel ADMIN");
+            }
             return db.Products;
         }
 
@@ -38,6 +48,7 @@ namespace projeto_dm106.Controllers
         }
 
         // PUT: api/Products/5
+        [Authorize(Roles = "ADMIN")]
         [ResponseType(typeof(void))]
         public IHttpActionResult PutProduct(int id, Product product)
         {
@@ -73,6 +84,7 @@ namespace projeto_dm106.Controllers
         }
 
         // POST: api/Products
+        [Authorize(Roles = "ADMIN")]
         [ResponseType(typeof(Product))]
         public IHttpActionResult PostProduct(Product product)
         {
@@ -88,6 +100,7 @@ namespace projeto_dm106.Controllers
         }
 
         // DELETE: api/Products/5
+        [Authorize(Roles = "ADMIN")]
         [ResponseType(typeof(Product))]
         public IHttpActionResult DeleteProduct(int id)
         {
