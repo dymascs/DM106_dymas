@@ -20,5 +20,7 @@ namespace projeto_dm106.Data
         }
 
         public System.Data.Entity.DbSet<projeto_dm106.Models.Product> Products { get; set; }
+
+        public System.Data.Entity.DbSet<projeto_dm106.Models.Order> Orders { get; set; }
     }
 }
