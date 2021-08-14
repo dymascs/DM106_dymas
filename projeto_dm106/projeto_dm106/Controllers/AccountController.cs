@@ -319,7 +319,7 @@ namespace projeto_dm106.Controllers
         }
 
         // POST api/Account/Register
-        [AllowAnonymous]
+        [Authorize(Roles = "ADMIN")]
         [Route("Register")]
         public async Task<IHttpActionResult> Register(RegisterBindingModel model)
         {
@@ -336,8 +336,16 @@ namespace projeto_dm106.Controllers
             {
                 return GetErrorResult(result);
             }
+            else
+            {
+                var addToRoleResult = await UserManager.AddToRoleAsync(user.Id, "USER");
+                if (!addToRoleResult.Succeeded)
+                {
+                    return GetErrorResult(result);
+                }
+            }
 
-            return Ok();
+                return Ok();
         }
 
         // POST api/Account/RegisterExternal
