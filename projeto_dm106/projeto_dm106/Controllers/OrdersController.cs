@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using projeto_dm106.br.com.correios.ws;
+using projeto_dm106.CRMClient;
 using projeto_dm106.Data;
 using projeto_dm106.Models;
 
@@ -19,6 +20,25 @@ namespace projeto_dm106.Controllers
     public class OrdersController : ApiController
     {
         private projeto_dm106Context db = new projeto_dm106Context();
+
+        [ResponseType(typeof(string))]
+        [HttpGet]
+        [Route("cep")]
+        public IHttpActionResult ObtemCEP()
+        {
+            CRMRestClient crmClient = new CRMRestClient();
+            Customer customer = crmClient.GetCustomerByEmail(User.Identity.Name);
+
+            if (customer != null)
+            {
+                return Ok(customer.zip);
+            }
+            else
+            {
+                return BadRequest("Falha ao consultar o CRM");
+            }
+        }
+
 
         [ResponseType(typeof(string))]
         [HttpGet]

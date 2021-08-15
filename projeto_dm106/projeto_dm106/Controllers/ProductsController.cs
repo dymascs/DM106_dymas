@@ -107,6 +107,11 @@ namespace projeto_dm106.Controllers
             {
                 return BadRequest(ModelState);
             }
+            if (db.Products.Count(e => e.modelo == product.modelo) > 0 || db.Products.Count(e => e.codigo == product.codigo) > 0)
+            {
+                return BadRequest("modelo ou codigo igual a algum existente.");
+            }
+
 
             db.Products.Add(product);
             db.SaveChanges();
@@ -144,5 +149,7 @@ namespace projeto_dm106.Controllers
         {
             return db.Products.Count(e => e.Id == id) > 0;
         }
+
+
     }
 }
