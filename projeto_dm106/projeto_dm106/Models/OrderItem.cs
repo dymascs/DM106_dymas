@@ -17,5 +17,7 @@ namespace projeto_dm106.Models
 
         public int OrderId { get; set; }
 
+        public int NumProduct { get; set; }
+
     }
 }

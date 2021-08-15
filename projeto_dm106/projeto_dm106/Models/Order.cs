@@ -18,6 +18,16 @@ namespace projeto_dm106.Models
 
 		public decimal precoFrete { get; set; }
 
+		public string dataPostada { get; set; }
+
+		public string dataEntrega { get; set; }
+
+		public string status { get; set; }
+
+		public decimal precoTotal { get; set; }
+
+		public decimal pesoTotal { get; set; }
+
 		public virtual ICollection<OrderItem> OrderItems{ get; set; }
 
 	}

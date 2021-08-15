@@ -43,11 +43,16 @@ namespace projeto_dm106.Controllers
         [ResponseType(typeof(string))]
         [HttpGet]
         [Route("shipping")]
-        public IHttpActionResult CalcShipping()
+        public IHttpActionResult CalcShipping(int id)
         {
+            Order order = db.Orders.Find(id);
+            CRMRestClient crmClient = new CRMRestClient();
+            Customer customer = crmClient.GetCustomerByEmail(order.userName);
+            
+            
             string frete;
             CalcPrecoPrazoWS correios = new CalcPrecoPrazoWS();
-            cResultado resultado = correios.CalcPrecoPrazo("", "", "04014", "37757000", "37002970", "1", 1, 30, 30, 30, 30, "N", 100, "S");
+            cResultado resultado = correios.CalcPrecoPrazo("", "", "04014", "37540000", customer.zip, "50", 1, 1, 1, 1, 1, "N", 100, "S"); ;
             if (resultado.Servicos[0].Erro.Equals("0"))
             {
                 frete = "Valor do frete: " + resultado.Servicos[0].Valor + " - Prazo de entrega: " + resultado.Servicos[0].PrazoEntrega + " dia(s)";
@@ -66,6 +71,19 @@ namespace projeto_dm106.Controllers
             return db.Orders.Include(order => order.OrderItems).ToList();
         }
 
+        [ResponseType(typeof(List<Order>))]
+        [HttpGet]
+        [Route("usersearch")]
+        // GET: api/Orders
+        public List<Order> GetOrdersSearchUser(string username)
+        {
+            if (User.IsInRole("ADMIN") || User.Identity.Name.Equals(username))
+            {
+                return db.Orders.Where(p => p.userName == username).ToList();
+            }
+
+            return null;           
+        }
 
 
         // GET: api/Orders/5
@@ -150,8 +168,14 @@ namespace projeto_dm106.Controllers
 
                 order.userName = User.Identity.Name;
 
-                
             }
+
+            
+            order.status = "novo";
+            order.pesoTotal = 0;
+            order.precoFrete = 0;
+            order.precoTotal = 0;
+            order.dataPostada = DateTime.Now.ToString();
 
             db.Orders.Add(order);
             db.SaveChanges();
@@ -175,6 +199,42 @@ namespace projeto_dm106.Controllers
             }
 
             db.Orders.Remove(order);
+            db.SaveChanges();
+
+            return Ok(order);
+        }
+
+        [ResponseType(typeof(Order))]
+        [HttpPost]
+        [Route("finish")]
+        public IHttpActionResult FinishOrder(int id)
+        {
+            Order order = db.Orders.Find(id);
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            if (!User.IsInRole("ADMIN") && !User.Identity.Name.Equals(order.userName))
+            {
+                return BadRequest("usuario não cardastrado.");
+            }
+
+            if (order.precoFrete == 0)
+            {
+                return BadRequest("Frete do pedido está nulo.");
+            }
+
+            if (order.status.Equals("fechado"))
+            {
+                return BadRequest("Finalizado.");
+            }
+
+
+            order.status = "fechado";
+
+
+            db.Entry(order).State = EntityState.Modified;
             db.SaveChanges();
 
             return Ok(order);

@@ -226,6 +226,10 @@
     <Compile Include="Migrations\202108142147289_AddOrderAndOrderItem.Designer.cs">
       <DependentUpon>202108142147289_AddOrderAndOrderItem.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202108150638530_orders.cs" />
+    <Compile Include="Migrations\202108150638530_orders.Designer.cs">
+      <DependentUpon>202108150638530_orders.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -367,6 +371,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202108142147289_AddOrderAndOrderItem.resx">
       <DependentUpon>202108142147289_AddOrderAndOrderItem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202108150638530_orders.resx">
+      <DependentUpon>202108150638530_orders.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
