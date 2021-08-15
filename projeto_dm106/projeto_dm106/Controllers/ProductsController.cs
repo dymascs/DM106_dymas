@@ -15,9 +15,24 @@ using projeto_dm106.Models;
 namespace projeto_dm106.Controllers
 {
     [Authorize]
+    [RoutePrefix("api/products")]
     public class ProductsController : ApiController
     {
         private projeto_dm106Context db = new projeto_dm106Context();
+
+        [ResponseType(typeof(Product))]
+        [HttpGet]
+        [Route("byname")]
+        public IHttpActionResult GetProductByName(string name)
+        {
+            var product = db.Products.Where(p => p.nome == name);
+            if (product == null)
+            {
+                return NotFound();
+            }
+            return Ok(product);
+        }
+        
 
         // GET: api/Products
         public IQueryable<Product> GetProducts()

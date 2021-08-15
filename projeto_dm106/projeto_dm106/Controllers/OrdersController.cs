@@ -13,11 +13,13 @@ using projeto_dm106.Models;
 
 namespace projeto_dm106.Controllers
 {
+    [Authorize]
     public class OrdersController : ApiController
     {
         private projeto_dm106Context db = new projeto_dm106Context();
 
         // GET: api/Orders
+        [Authorize(Roles = "ADMIN")]
         public List<Order> GetOrders()
         {
             return db.Orders.Include(order => order.OrderItems).ToList();
@@ -33,11 +35,13 @@ namespace projeto_dm106.Controllers
                 return NotFound();
             }
 
+            
+
             return Ok(order);
         }
 
         // PUT: api/Orders/5
-        [ResponseType(typeof(void))]
+        /*[ResponseType(typeof(void))]
         public IHttpActionResult PutOrder(int id, Order order)
         {
             if (!ModelState.IsValid)
@@ -69,7 +73,7 @@ namespace projeto_dm106.Controllers
             }
 
             return StatusCode(HttpStatusCode.NoContent);
-        }
+        }*/
 
         // POST: api/Orders
         [ResponseType(typeof(Order))]
@@ -78,6 +82,32 @@ namespace projeto_dm106.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+
+
+            /*if (!User.IsInRole("ADMIN") && !User.Identity.Name.Equals(order.userName))
+            {
+                return StatusCode(HttpStatusCode.Forbidden);
+            }*/
+
+
+            if (User.IsInRole("ADMIN"))
+            {
+                if (order.userName == null || order.userName.Length == 0)
+                {
+                    return BadRequest();
+                }
+            }
+            else
+            {
+                if (order.userName != null)
+                {
+                    return BadRequest();
+                }
+
+                order.userName = User.Identity.Name;
+
+                
             }
 
             db.Orders.Add(order);
@@ -94,6 +124,11 @@ namespace projeto_dm106.Controllers
             if (order == null)
             {
                 return NotFound();
+            }
+
+            if (!User.IsInRole("ADMIN") && !User.Identity.Name.Equals(order.userName))
+            {
+                return StatusCode(HttpStatusCode.Forbidden);
             }
 
             db.Orders.Remove(order);
