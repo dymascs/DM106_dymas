@@ -8,15 +8,36 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
+using projeto_dm106.br.com.correios.ws;
 using projeto_dm106.Data;
 using projeto_dm106.Models;
 
 namespace projeto_dm106.Controllers
 {
     [Authorize]
+    [RoutePrefix("api/orders")]
     public class OrdersController : ApiController
     {
         private projeto_dm106Context db = new projeto_dm106Context();
+
+        [ResponseType(typeof(string))]
+        [HttpGet]
+        [Route("shipping")]
+        public IHttpActionResult CalcShipping()
+        {
+            string frete;
+            CalcPrecoPrazoWS correios = new CalcPrecoPrazoWS();
+            cResultado resultado = correios.CalcPrecoPrazo("", "", "04014", "37757000", "37002970", "1", 1, 30, 30, 30, 30, "N", 100, "S");
+            if (resultado.Servicos[0].Erro.Equals("0"))
+            {
+                frete = "Valor do frete: " + resultado.Servicos[0].Valor + " - Prazo de entrega: " + resultado.Servicos[0].PrazoEntrega + " dia(s)";
+                return Ok(frete);
+            }
+            else
+            {
+                return BadRequest("Código do erro: " + resultado.Servicos[0].Erro + "-" + resultado.Servicos[0].MsgErro);
+            }
+        }
 
         // GET: api/Orders
         [Authorize(Roles = "ADMIN")]
@@ -25,6 +46,8 @@ namespace projeto_dm106.Controllers
             return db.Orders.Include(order => order.OrderItems).ToList();
         }
 
+
+
         // GET: api/Orders/5
         [ResponseType(typeof(Order))]
         public IHttpActionResult GetOrder(int id)
@@ -32,7 +55,7 @@ namespace projeto_dm106.Controllers
             Order order = db.Orders.Find(id);
             if (order == null)
             {
-                return NotFound();
+                return BadRequest("pedido não encontrado!");
             }
 
             
